@@ -1,0 +1,7 @@
+custom_module.form:
+    path: '/user-info'
+    defaults:
+        _form: 'Drupal\custom_module\Form\UserInfoForm'
+        _title: 'Personal information'
+    requirements:    
+        _permission : 'access content'

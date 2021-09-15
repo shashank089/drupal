@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the node module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function custom_module_schema() {
+	$schema['custom_table'] = [
+		'description' => 'Identifies records.',
+		'fields' => [
+			'id' => [
+				'description' => 'The unique id for the row.',
+				'type' => 'serial',
+				'not null' => TRUE
+			],
+			'name' => [
+				'description' => 'User Name.',
+				'type' => 'varchar',
+				'length' => 255,
+				'not null' => TRUE,
+				'default' => '',
+			],
+			'email' => [
+				'description' => 'User Email.',
+				'type' => 'varchar',
+				'length' => 255,
+				'not null' => TRUE,
+				'default' => '',
+			],
+			'phone_no' => [
+				'description' => 'Phone No.',
+				'type' => 'varchar',
+				'length' => 255,
+				'not null' => TRUE,
+				'default' => '',
+			],
+			'company_name' => [
+				'description' => 'Company Name.',
+				'type' => 'varchar',
+				'length' => 255,
+				'not null' => TRUE,
+				'default' => '',
+			],
+			'country' => [
+				'description' => 'Country.',
+				'type' => 'int',
+				'unsigned' => TRUE,
+				'not null' => TRUE,
+				'default' => 0,
+			]
+		],
+		'primary key' => ['id']
+	];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function custom_module_uninstall() {
+	//
+}

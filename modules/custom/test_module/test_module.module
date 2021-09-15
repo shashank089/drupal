@@ -1,0 +1,19 @@
+<?php
+
+use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
+use Drupal\user\Entity\Role;
+use Drupal\user\Entity\User;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+
+/**
+ * Implements hook_entity_view_display_alter().
+ */
+function test_module_entity_view_display_alter(EntityViewDisplayInterface $display, $context) {
+	if ($context['entity_type'] == 'node') {
+		// $node = Node::load()
+		//kint($context);
+	}
+}

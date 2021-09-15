@@ -1,0 +1,5 @@
+name: Custom Module
+description: 'Module to implement custom functionalities.'
+core: 8.x
+package: custom
+type: module

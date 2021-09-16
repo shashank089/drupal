@@ -4,7 +4,7 @@ namespace Drupal\custom_module\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\user\UserInterface;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Implements an example form.
@@ -22,6 +22,13 @@ class UserInfoForm extends FormBase {
    	* {@inheritdoc}
    	*/
 	public function buildForm(array $form, FormStateInterface $form_state) {
+
+		$country =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('countries');
+		
+		foreach ($country as $value) {
+			$countries[$value->tid] = $value->name;
+		}
+
 		$form['name'] = [
 			'#type' => 'textfield',
 			'#title' => $this->t('Name'),
@@ -57,10 +64,11 @@ class UserInfoForm extends FormBase {
 			'#required' => TRUE
 		];
 		$form['country'] = [
-			'#type' => 'textfield',
+			'#type' => 'select',
 			'#title' => $this->t('Country'),
-			'#size' => 30,
-			'#description' => $this->t('Enter your Country.'),
+			'#description' => $this->t('Select your Country.'),
+			'#empty_option' => 'Select...',
+			'#options' => $countries,
 			'#required' => TRUE
 		];
 		$form['actions']['#type'] = 'actions';
@@ -76,8 +84,8 @@ class UserInfoForm extends FormBase {
 	* {@inheritdoc}
 	*/
 	public function validateForm(array &$form, FormStateInterface $form_state) {
-		if (strlen($form_state->getValue('phone_number')) < 3) {
-		$form_state->setErrorByName('phone_number', $this->t('The phone number is too short. Please enter a full phone number.'));
+		if (strlen($form_state->getValue('phone_number')) < 7) {
+			$form_state->setErrorByName('phone_number', $this->t('Please enter valid value.'));
 		}
 	}
 
@@ -85,6 +93,38 @@ class UserInfoForm extends FormBase {
 	* {@inheritdoc}
 	*/
 	public function submitForm(array &$form, FormStateInterface $form_state) {
-		$this->messenger()->addStatus($this->t('Your phone number is @number', ['@number' => $form_state->getValue('phone_number')]));
+		
+		$name = $form_state->getValue("name");
+		$email = $form_state->getValue("email");
+		$phone_number = $form_state->getValue("phone_number");
+		$company_name = $form_state->getValue("company_name");
+		$country = $form_state->getValue("country");
+
+		$database = \Drupal::database();
+		$result = $database->insert('custom_table')
+			->fields([
+				'name' => $name,
+				'email' => $email,
+				'phone_no' => $phone_number,
+				'company_name' => $company_name,
+				'country' => $country,
+			])
+			->execute();
+
+		if ($result) {
+			$this->messenger()->addStatus($this->t('Details saved for user @username.', ['@username' => $name]));
+		}
+
+		\Drupal::logger('custom_module')->debug('<pre>'.print_r([
+				'name' => $name,
+				'email' => $email,
+				'phone_no' => $phone_number,
+				'company_name' => $company_name,
+				'country' => $country,
+			], TRUE).'</pre>');
 	}
 }
+
+
+
+

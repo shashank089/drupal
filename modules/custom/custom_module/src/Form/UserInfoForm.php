@@ -115,16 +115,8 @@ class UserInfoForm extends FormBase {
 			$this->messenger()->addStatus($this->t('Details saved for user @username.', ['@username' => $name]));
 		}
 
-		\Drupal::logger('custom_module')->debug('<pre>'.print_r([
-				'name' => $name,
-				'email' => $email,
-				'phone_no' => $phone_number,
-				'company_name' => $company_name,
-				'country' => $country,
-			], TRUE).'</pre>');
+		\Drupal::logger('custom_module')->debug('<pre>'.print_r([], TRUE).'</pre>');
 	}
 }
-
-
 
 

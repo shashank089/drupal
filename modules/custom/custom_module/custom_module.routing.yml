@@ -1,7 +1,31 @@
 custom_module.form:
     path: '/user-info'
     defaults:
-        _form: 'Drupal\custom_module\Form\UserInfoForm'
-        _title: 'Personal information'
+        _form: '\Drupal\custom_module\Form\UserInfoForm'
+        _title: 'User information'
     requirements:    
         _permission : 'access content'
+
+custom_module.userlistform:
+    path: '/admin/people/user-info'
+    defaults:
+        _form: '\Drupal\custom_module\Form\UserListForm'
+        _title: 'Users information'
+    requirements:
+        _permission: 'administer site configuration'
+
+userlist.edit:
+    path: '/admin/user-info/{id}/edit'
+    defaults:
+        _form: '\Drupal\custom_module\Form\UserInfoForm'
+        _title: 'Edit User information'
+    requirements:
+        _permission: 'access content'
+
+userlist.delete:
+    path: '/user-info/{id}/delete'
+    defaults:
+        _controller: '\Drupal\custom_module\Controller\UserDeleteController::deleteInfo'
+        _title: 'Delete data'
+    requirements:
+        _permission: 'access content'

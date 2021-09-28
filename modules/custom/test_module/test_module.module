@@ -8,6 +8,8 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 
+use Drupal\Core\Render\Markup;
+
 /**
  * Implements hook_entity_view_display_alter().
  */
@@ -17,3 +19,32 @@ function test_module_entity_view_display_alter(EntityViewDisplayInterface $displ
 		//kint($context);
 	}
 }
+
+function test_module_preprocess_views_view_field(&$variables) {
+	$view = $variables['view'];
+  	$field = $variables['field'];
+
+  	if ($view->id() == 'client_status') {
+  		if ($field->field == 'field_client_status') {
+  			$my_field_value = $variables['field']->getValue($variables['row']);
+  			$uid = $variables['row']->_entity->get('uid')->value;
+
+  			$variables['#attached']['library'][] = 'test_module/drupal.test_module';
+
+  			$user_fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('user','user');
+			$fields = $user_fields['field_client_status']->getSettings();
+
+			$options = "<select name='client_status' class='client_status' data-userid=".$uid.">";
+			foreach ($fields['allowed_values'] as $key => $value) {
+				$selected = ($key == $my_field_value) ? 'selected' : '';
+				$options .= "<option value='".$key."' ".$selected.">".$value."</option>";
+			}
+			$options .= "</select>";
+
+			$html = $options;
+			$variables['output'] = Markup::create($html);
+		}
+  	}
+}
+
+

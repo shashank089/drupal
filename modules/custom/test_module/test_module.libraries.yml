@@ -1,0 +1,7 @@
+drupal.test_module:
+  version: 1.0
+  js:
+    js/test_module.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

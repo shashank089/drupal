@@ -1,0 +1,125 @@
+<?php
+
+use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
+
+/* function parkbark_api_page_attachments(array &$attachments) {
+	print_r('testt');
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#value' => 'alert("Hello world!");',
+      '#attributes' => array('src' => ''),
+    ],
+    'hello-world',
+  ];
+} */
+
+function parkbark_api_entity_view(array &$build, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display, $view_mode) {
+	
+	/* $tokens = 1;
+	$node_token = Drupal\node\Entity\Node::load(533);
+	$node_token->set('field_tokens_for_park', $tokens);
+	$node_token->save(); */
+
+	/* $query = \Drupal::database()->select('node', 'n');
+	$query->join('node_field_data', 'd', 'n.nid = d.nid');
+	$query->fields('n', array('nid'));
+	$query->condition('n.type', 'parks');
+	$query->condition('d.status', 1);
+	//$query->range(0, 1);
+	$result = $query->execute();
+	$rows = $result->fetchAll();
+	
+	$tokens = 1; //change to string for live
+	foreach($rows as $key => $value){
+		
+		$node_token = Drupal\node\Entity\Node::load($value->nid);
+		$node_token->set('field_tokens_for_park', $tokens);
+		//print_r($value);
+		$node_token->save();
+	} */
+
+}
+
+function parkbark_api_views_pre_render(\Drupal\views\ViewExecutable $view) {
+	\Drupal::logger('parkbark_api')->notice($message = 'parks api hit');
+	if($view->id() == 'parks'){
+
+		if($_REQUEST['uid']){
+			$uid = $_REQUEST['uid'];
+			$role = User::load($uid)->getRoles(true);
+			
+			if(in_array('vip', $role)){
+				//all access
+			}
+			else{
+				foreach($view->result as $value){
+					$nid = $value->_entity->get('nid')->value;
+					
+					$query = \Drupal::database()->select('nodeaccess', 'n');
+					$query->fields('n', array('nid'));
+					$query->condition('n.nid', $nid);
+					$query->condition('n.gid', $uid);
+					$query->range(0, 1);
+					$result = $query->execute();
+					$access = $result->fetchField();
+					
+					if(!$access){
+						$value->_entity->set('field_park_address_display', 'Locked');
+					}
+				}
+			}
+		}
+		else{
+			//lock all
+			foreach($view->result as $value){
+				$value->_entity->set('field_park_address_display', 'Locked');
+			}
+		}
+	}
+	
+	if($view->id() == 'parks-list'){
+
+		if($_REQUEST['uid']){
+			$uid = $_REQUEST['uid'];
+			
+			
+			if($uid == null || $uid == '')
+			{
+				foreach($view->result as $value){
+					
+					
+				
+						$value->_entity->set('field_park_address_display', 'Locked');
+					
+				}
+			}
+		}
+		else{
+			//lock all
+			foreach($view->result as $value){
+				$value->_entity->set('field_park_address_display', 'Locked');
+			}
+		}
+	}
+	
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function parkbark_api_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+	//\Drupal::logger('form_id')->notice($form_id);
+
+	if ($form_id == 'payment_form') {
+		$form['#attached']['library'][] = 'parkbark_api/parkbark_api.form';
+	}
+}
+
+
+
+
+
+

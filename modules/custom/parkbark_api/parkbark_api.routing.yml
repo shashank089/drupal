@@ -1,0 +1,15 @@
+parkbark_api.form:
+ path: '/parkbark_api/paymentform/{userid}/{tokens}'
+ defaults:
+   _title: 'Braintree Payment form'
+   _form: '\Drupal\parkbark_api\Form\PaymentForm'
+ requirements:
+   _permission: 'access content'
+   
+parkbark.payment_page:
+  path: '/payment/{userid}/{tokens}'
+  defaults:
+    _controller: '\Drupal\parkbark_api\Controller\PaymentController::paymentPage'
+    _title: 'Payment Form'
+  requirements:
+    _permission: 'access content'

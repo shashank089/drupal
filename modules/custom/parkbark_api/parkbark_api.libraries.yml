@@ -1,0 +1,7 @@
+parkbark_api.form:
+  version: 1.x
+  css:
+    theme:
+      css/parkbark_api.css: {}
+  js:
+    https://js.braintreegateway.com/web/dropin/1.18.0/js/dropin.min.js: { type: external, minified: true }

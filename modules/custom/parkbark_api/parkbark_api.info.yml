@@ -1,0 +1,5 @@
+name: Parkbark REST API module
+description: Defines custom REST Resource
+package: Custom
+type: module
+core: 8.x

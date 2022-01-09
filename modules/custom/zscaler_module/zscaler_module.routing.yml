@@ -1,0 +1,7 @@
+zscaler_module.form:
+    path: '/add-blog'
+    defaults:
+        _form: '\Drupal\zscaler_module\Form\AddBlogForm'
+        _title: 'Add Blog Form'
+    requirements:    
+        _permission : 'access content'

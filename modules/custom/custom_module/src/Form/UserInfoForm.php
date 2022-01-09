@@ -4,7 +4,9 @@ namespace Drupal\custom_module\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\taxonomy\Entity\Term;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Implements an example form.
@@ -23,18 +25,31 @@ class UserInfoForm extends FormBase {
    	*/
 	public function buildForm(array $form, FormStateInterface $form_state) {
 
+		$id = \Drupal::routeMatch()->getRawParameter('id');
+		$connection = \Drupal::database();
+		$query = $connection->select('custom_table', 'ct');
+		$query = $query->fields('ct');
+		$query = $query->condition('ct.id', $id);
+		$query = $query->execute();
+		$query = $query->fetchAssoc();
+
 		$country =\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('countries');
 		
 		foreach ($country as $value) {
 			$countries[$value->tid] = $value->name;
 		}
 
+		$form['id'] = [
+			'#type' => 'hidden',
+			'#value' => $query['id']
+		];
 		$form['name'] = [
 			'#type' => 'textfield',
 			'#title' => $this->t('Name'),
 			'#size' => 30,
 			'#description' => $this->t('Enter your Name.'),
 			'#required' => TRUE,
+			'#default_value' => $query['name'],
 			'#attributes' => [
 				'autocorrect' => 'none',
 				'autocapitalize' => 'none',
@@ -47,21 +62,25 @@ class UserInfoForm extends FormBase {
 			'#title' => $this->t('Email'),
 			'#size' => 30,
 			'#description' => $this->t('Enter your Email.'),
-			'#required' => TRUE
+			//'#placeholder' => $this->t('Enter your Email.'),
+			'#required' => TRUE,
+			'#default_value' => $query['email']
 		];
 		$form['phone_number'] = [
 			'#type' => 'textfield',
 			'#title' => $this->t('Phone No'),
 			'#size' => 30,
 			'#description' => $this->t('Enter your Phone No.'),
-			'#required' => TRUE
+			'#required' => TRUE,
+			'#default_value' => $query['phone_no']
 		];
 		$form['company_name'] = [
 			'#type' => 'textfield',
 			'#title' => $this->t('Company Name'),
 			'#size' => 30,
 			'#description' => $this->t('Enter your Company Name.'),
-			'#required' => TRUE
+			'#required' => TRUE,
+			'#default_value' => $query['company_name']
 		];
 		$form['country'] = [
 			'#type' => 'select',
@@ -69,7 +88,8 @@ class UserInfoForm extends FormBase {
 			'#description' => $this->t('Select your Country.'),
 			'#empty_option' => 'Select...',
 			'#options' => $countries,
-			'#required' => TRUE
+			'#required' => TRUE,
+			'#default_value' => $query['country']
 		];
 		$form['actions']['#type'] = 'actions';
 		$form['actions']['submit'] = [
@@ -94,6 +114,7 @@ class UserInfoForm extends FormBase {
 	*/
 	public function submitForm(array &$form, FormStateInterface $form_state) {
 		
+		$id = $form_state->getValue("id");
 		$name = $form_state->getValue("name");
 		$email = $form_state->getValue("email");
 		$phone_number = $form_state->getValue("phone_number");
@@ -101,7 +122,19 @@ class UserInfoForm extends FormBase {
 		$country = $form_state->getValue("country");
 
 		$database = \Drupal::database();
-		$result = $database->insert('custom_table')
+		if ($id) {
+			$query = $database->update('custom_table')
+				->fields([
+					'name' => $name,
+					'email' => $email,
+					'phone_no' => $phone_number,
+					'company_name' => $company_name,
+					'country' => $country,
+				])
+				->condition('id', $id)
+				->execute();
+		}else{
+			$query = $database->insert('custom_table')
 			->fields([
 				'name' => $name,
 				'email' => $email,
@@ -110,12 +143,16 @@ class UserInfoForm extends FormBase {
 				'country' => $country,
 			])
 			->execute();
+		}
 
-		if ($result) {
+		if ($id) {
+			$this->messenger()->addStatus($this->t('Details updated for user @username.', ['@username' => $name]));
+			return new RedirectResponse(Url::fromRoute('custom_module.form')->setAbsolute()->toString());
+		} else {
 			$this->messenger()->addStatus($this->t('Details saved for user @username.', ['@username' => $name]));
 		}
 
-		\Drupal::logger('custom_module')->debug('<pre>'.print_r([], TRUE).'</pre>');
+		//\Drupal::logger('custom_module')->debug('<pre>'.print_r([], TRUE).'</pre>');
 	}
 }
 

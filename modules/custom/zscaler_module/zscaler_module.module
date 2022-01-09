@@ -1,0 +1,45 @@
+<?php
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_insert()
+ */
+
+function zscaler_module_node_insert(EntityInterface $entity) {
+
+	if ($entity->bundle() == 'blog') {
+
+		$conn = \Drupal::database();
+		$blog_insert = $conn->insert('blog_table');
+		$blog_insert->fields([
+			'nid' => $entity->id(),
+			'created' => REQUEST_TIME,
+			'updated' => NULL,
+			'notification_status' => 0,
+		]);
+		$blog_insert->execute();
+	}
+
+}
+
+/**
+* Implements hook_mail().
+*/
+
+function zscaler_module_mail($key, &$message, $params) {
+	$options = array(
+		'langcode' => $message['langcode'],
+	);
+
+ 	switch ($key) {
+	  	case 'create_blog':
+			$message['from'] = \Drupal::config('system.site')->get('mail');
+			$message['subject'] = t('Blog created: @title', array('@title' => $params['node_title']), $options);
+			$message['body'][] = $params['message'];
+		break;
+ 	}
+
+}
+
+

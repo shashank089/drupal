@@ -1,0 +1,5 @@
+services:
+  zscaler_module.commands:
+    class: \Drupal\zscaler_module\Commands\BlogCustomCommands
+    tags:
+      - { name: drush.command }

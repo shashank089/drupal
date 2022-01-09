@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * @file
+ * Module install.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function zscaler_module_schema() {
+  $schema['blog_table'] = [
+    'description' => 'Custom Blog table.',
+    'fields' => [
+      'id' => [
+        'description' => 'Unique identifier for rows.',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'nid' => [
+        'description' => 'Blog node id.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'created' => [
+        'description' => 'Timestamp of blog created.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'updated' => [
+        'description' => 'Timestamp of blog updated.',
+        'type' => 'int',
+        'default' => 0,
+        'not null' => FALSE,
+        'unsigned' => TRUE,
+      ],
+      'notification_status' => [
+        'description' => 'User notification status',
+        'type' => 'int',
+        'size' => 'tiny',
+        'default' => 0,
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ]
+    ],
+    'primary key' => ['id'],
+  ];
+  return $schema;
+}

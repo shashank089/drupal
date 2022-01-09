@@ -14,17 +14,20 @@ use Drupal\rest\ResourceResponse;
  *   id = "user_status_api",
  *   label = @Translation("User Status Api"),
  *   uri_paths = {
- *     "canonical" = "/set-user-status/{userid}/{status}",
+ *     "canonical" = "/set-user-status",
  *     "https://www.drupal.org/link-relations/create" = "/set-user-status"
  *   }
  * )
  */
 class UserStatus extends ResourceBase {
  
-	public function get($status, $userid) {
+	public function post($data) {
+
+		$userid = $data['userid'];
+		$status = $data['status'];
 
 		$user = User::load($userid);
-		$user->set('field_client_status', $status);
+		$user->set('status', $status);
 		$user->save();
 		
 		$response['status']= 'success';

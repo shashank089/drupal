@@ -1,0 +1,5 @@
+name: Zscaler test module
+desciption: Zscaler test module
+core: 8.x
+package: custom
+type: module

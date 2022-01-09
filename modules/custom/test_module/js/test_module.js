@@ -6,12 +6,25 @@
         var status = $(this).val();
         var userid = $(this).data('userid');
 
-        $.ajax({
+        /*$.ajax({
           url: "/set-user-status/" + userid + "/" + status,
-          type: "get",
-          //data: {'status' : status, 'userid' : userid} ,
+          type: "GET",
           success: function (response) {},
+          complete : function() {}
+        });*/
+
+        $.ajax({
+          url: "/set-client-status",
+          type: "POST",
+          data: {'status' : status, 'userid' : userid},
+          dataType: 'json',
+          beforeSend : function() {},
+          success: function (response) {
+            alert(response.msg);
+          },
+          complete : function() {}
         });
+
       });
 
     }

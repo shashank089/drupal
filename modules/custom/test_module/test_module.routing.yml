@@ -1,0 +1,17 @@
+test_module.menuclone:
+    path: '/admin/config/system/menuclone'
+    defaults:
+        _form: '\Drupal\test_module\Form\MenuCloneForm'
+        _title: 'Menu Clone Form'
+    requirements:
+        _entity_create_access: 'menu'
+
+test_module.userstatus:
+    path: '/set-client-status'
+    defaults:
+        _controller: '\Drupal\test_module\Controller\ClientStatusController::setStatus'
+        _title: 'Set Status'
+    options:
+        no_cache: 'TRUE'
+    requirements:
+        _user_is_logged_in: 'TRUE'
